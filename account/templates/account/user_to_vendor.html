@@ -1,0 +1,61 @@
+{% extends 'general/base.html' %} {%load static%} {% block title%} Ezyclick
+Registeration {%endblock %} {% block body %}
+
+<div class="container" style="margin-top: 15px; margin-bottom: 15px">
+    <div class="text-center">
+        <img
+            src="{%static 'general/img/logo.png'%}"
+            class="rounded"
+            alt="EZYCLICK"
+            style="width: 5vw; min-width: 50px" />
+    </div>
+    <h1 class="text-center">Register</h1>
+    <form method="post" class="row g-3" action="{% url 'create_store' %}">
+        {% csrf_token %}
+
+        <div class="col-md-6">
+            <label for="phone" class="form-label">Phone</label>
+            <input type="number" class="form-control" name="phone" id="phone" />
+        </div>
+        <div class="col-md-6">
+            <label for="gst" class="form-label">GST</label>
+            <input type="text" class="form-control" name="gst" id="gst" />
+        </div>
+        <div class="col-md-6">
+            <label for="state" class="form-label">State</label>
+            <input type="text" class="form-control" name="state" id="state" />
+        </div>
+        <div class="col-md-6">
+            <label for="city" class="form-label">city</label>
+            <input type="text" class="form-control" name="city" id="city" />
+        </div>
+        <div class="col-md-6">
+            <label for="address" class="form-label">Address</label>
+            <input
+                type="text"
+                class="form-control"
+                name="address"
+                id="address" />
+        </div>
+        <div class="col-md-6">
+            <label for="shop name" class="form-label">Shop Name</label>
+            <input type="text" class="form-control" name="name" id="name" />
+        </div>
+        <div class="col-12">
+            <div class="form-check">
+                <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="gridCheck" />
+                <label class="form-check-label" for="gridCheck">
+                    I agree to the terms and conditions
+                </label>
+            </div>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Sign in</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
