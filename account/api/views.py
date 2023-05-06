@@ -20,6 +20,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
+from django.contrib.auth import logout, login, authenticate
 
 # @csrf_exempt
 # @api_view(['GET',])
@@ -79,10 +80,59 @@ from rest_framework.authtoken.models import Token
 
 
 @csrf_exempt
-@api_view(['GET'])
+@api_view(['POST'])
 # @permission_classes([IsAuthenticated])
 @permission_classes([])
 def test_api(request, id=None):
+    if request.method == "POST":
+        mentor = request.data.get('mentor')
+    pass
+
+
+
+
+ 
+@csrf_exempt
+@api_view(['GET','POST'])
+# @permission_classes([IsAuthenticated])
+@permission_classes([])
+def creditinfo(request):
+    token = request.headers.get('Authorization')
+    user = Token.objects.get(key=token).user
+    # do something with the user object
+    if request.method == 'GET':
+        data=[{"credits":user.credits}]
+        return Response(data)
+
+    if request.method == "POST":
+        mentor = request.data.get('mentor')
+        price = request.data.get('price')
+        if user.credits>=price:
+            user.credits-= price
+            user.save()
+            
+
+        else:
+            return Response({'error': 'Insufficient Funds'})
+
+@api_view(['POST'])
+def user_login(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+    user = authenticate(email=username, password=password)
+    if user is not None:
+        token, created = Token.objects.get_or_create(user=user)
+        login(request, user)
+        print("login successful")
+        return Response({'token': token.key})
+    else:
+        return Response({'error': 'Invalid credentials'})
+
+@csrf_exempt
+@api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+@permission_classes([])
+def startupdata(request, id=None):
     if request.method == 'GET':
         data = Startup.objects.all()
         serializer = StartupSerializer(data, many=True)    
@@ -101,22 +151,48 @@ def user_registration(request):
     else:
         return Response(serializer.errors, status=400)
 
+@api_view(['POST'])
+def startup_registration(request):
+    print("data########",request.data)
+    email = request.data.get('email')
+    password = request.data.get('password')
+    name = request.data.get('name')
+    contact_number = request.data.get('phone')
+    startup_name=request.data.get('companyName')
+    
+    user = Account.objects.create_user(
+                name=name, email=email, password=password, contact_number=contact_number, viewpass=password
+            )
+    user.is_startup = True
+    user.save()
+
+    startup = Startup.objects.create(
+                startup_name=startup_name, founder=user,phone=contact_number
+            )
+    startup.save()
+    
+    token, created = Token.objects.get_or_create(user=user)
+    return Response({'token': token.key})
+
+
 @csrf_exempt
 @api_view(['GET'])
 # @permission_classes([IsAuthenticated])
 @permission_classes([])
 def mentor(request, id=None):
+    print(id)
     if request.method == 'GET':
         if id==None:
             data = Mentor.objects.all()
+            print(data)
             serializer = MentorSerializer(data, many=True)    
-
+            print(serializer.data)
             return Response(serializer.data)
         else:
             data = Mentor.objects.filter(pk=id)
             serializer = MentorSerializer(data, many=True)
     
-            # print(serializer.data)
+            print(serializer.data)
             return Response(serializer.data)
 
 

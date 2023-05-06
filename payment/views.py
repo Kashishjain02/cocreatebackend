@@ -25,4 +25,27 @@ def create_subscription(request):
         return HttpResponse(subscription["short_url"])
 
 def test(request):
+        pass
+
+
+def create_payment_order(request):
+        client = razorpay.Client(auth=("rzp_test_AvD6vsvRd1viWC", "DkkWhsoBYHSs9ubq6EbdSm9t"))
+
+        data = {
+        "amount": 100,
+        "currency": "INR",
+        "receipt": "receipt#1",
+        "notes": {
+                "key1": "value3",
+                "key2": "value2"
+        }
+        }
+        order=client.order.create(data=data)
+        print(order)
+
+def payment_handler(request):
+        return render(request,"payment/payment_handler.html")
+
+
+def subscription_handler(request):
     return render(request,"payment/handler.html")

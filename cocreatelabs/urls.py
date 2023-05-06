@@ -28,4 +28,6 @@ urlpatterns = [
     path('api-token-auth/', views.obtain_auth_token),
     # api urls
     path('api/', include('account.api.urls')),
+    path('api/', include('mentorconnect.api.urls')),
+    path('api/', include('payment.api.urls')),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
