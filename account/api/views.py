@@ -153,26 +153,32 @@ def user_registration(request):
 
 @api_view(['POST'])
 def startup_registration(request):
-    print("data########",request.data)
     email = request.data.get('email')
     password = request.data.get('password')
     name = request.data.get('name')
     contact_number = request.data.get('phone')
     startup_name=request.data.get('companyName')
-    
-    user = Account.objects.create_user(
-                name=name, email=email, password=password, contact_number=contact_number, viewpass=password
-            )
-    user.is_startup = True
-    user.save()
+    try:
+        user = Account.objects.create_user(
+                    name=name, email=email, password=password, contact_number=contact_number, viewpass=password
+                )
+        user.is_startup = True
+        user.save()
+    except Exception as e:
+        print("168 ::",e)
+        return Response({'error': 'User already exists'},status=status.HTTP_409_CONFLICT)
 
-    startup = Startup.objects.create(
-                startup_name=startup_name, founder=user,phone=contact_number
-            )
-    startup.save()
+    try:
+        startup = Startup.objects.create(
+                    startup_name=startup_name, founder=user,phone=contact_number
+                )
+        startup.save()
+    except Exception as e:
+        print(177,e)
+        return Response({'error': 'Startup already exists'})
     
     token, created = Token.objects.get_or_create(user=user)
-    return Response({'token': token.key})
+    return Response({'token': token.key},status=status.HTTP_201_CREATED)
 
 
 @csrf_exempt
