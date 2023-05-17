@@ -6,7 +6,7 @@ from django.db.utils import IntegrityError
 from django.urls import reverse
 
 from account.models import Account,Startup,Mentor
-from mentorconnect.models import Meeting,TempMeeting
+from mentorconnect.models import Meeting,TempMeeting,Applications
 from rest_framework.decorators import api_view, permission_classes
 
 from rest_framework.authtoken.models import Token
@@ -142,26 +142,47 @@ def test_api(request, id=None):
 @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
 @permission_classes([])
-def apply_for_mentorship(request, id=None):
+def apply_for_mentorship(request):
     token = request.headers.get('Authorization')
     user = Token.objects.get(key=token).user
+    print(request.data)
     if request.method == "POST":
         mentorid = request.data.get('mentorid')
         mentor = Mentor.objects.get(pk=mentorid)
-        date = request.data.get('date')
-        time = request.data.get('time')
+        about = request.data.get('about')
         goals = request.data.get('goals')
         expectations = request.data.get('expectations')
-        querries = request.data.get('querries')
-        print(date,time)
-        if user.is_startup:
-            # user=Account.objects.get(email=user.email)
-            # meet=TempMeeting.objects.create(startup=user,mentor=mentor,date=date,time=time,goals=goals,expectations=expectations,querries=querries)
-            # meet.save()
-            data=request.data
-            print("Data",data)
-            data['startup']=user.id
-            mentor.applications.append(data)
-            mentor.save()
+        questions = request.data.get('questions')
+        startup = Startup.objects.get(founder=user)
+        try:
+            application=Applications.objects.create(startup=startup,applied_to=mentor,mentor_name=mentor.name,about=about,goals=goals,expectations=expectations,questions=questions)
+            application.save()
+        except Exception as e:
+            print(e)
+            return Response({'error': 'something went wrong'})
+        
+        return Response({'msg': 'application recieved'},status=200)
 
-        return Response({'msg': 'data recieved'})
+from .serializers import ApplicationSerializer
+from django.core import serializers
+from django.http import JsonResponse
+@csrf_exempt
+@api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+@permission_classes([])
+def application_info(request):
+    token = request.headers.get('Authorization')
+    user = Token.objects.get(key=token).user
+    # do something with the user object
+    if request.method == 'GET':
+        startup = Startup.objects.get(founder=user)
+        applications=Applications.objects.filter(startup=startup)
+        serializer = ApplicationSerializer(applications, many=True)
+    
+        print(serializer.data)
+        return Response(serializer.data)
+        # queryset_data = serializers.serialize('json', applications)
+        # return JsonResponse(queryset_data, safe=False)
+        # return Response({'applications':"serialized_data"},status=200)
+
+    

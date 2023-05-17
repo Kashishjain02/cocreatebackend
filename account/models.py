@@ -118,14 +118,14 @@ class Mentor(models.Model):
     name= models.CharField(max_length=100)
     company = models.CharField(max_length=100)
     designation = models.CharField(max_length=100)
-    interests= models.JSONField(blank=True, null=True)
+    interests= models.JSONField(blank=True, null=True , default={"skills": [""]})
     image = models.ImageField(upload_to=get_uplaod_file_name, default="")
     linkedin= models.CharField(max_length=100)
     bio=models.TextField(blank=True, null=True)
     charges_in=models.IntegerField()
     charges_out=models.IntegerField()
     meetings=models.JSONField(blank=True, null=True,default=[])
-    applications=models.JSONField(blank=True, null=True,default=[])
+    application=models.JSONField(blank=True, null=True,default=[])
 
 
     is_blocked = models.BooleanField(default=False)

@@ -30,3 +30,18 @@ class TempMeeting(models.Model):
     # objects= MyAccountManager()
     def __str__(self):
         return self.startup.startup_name
+
+class Applications(models.Model):
+    startup= models.ForeignKey(Startup, on_delete=models.CASCADE)
+    applied_to= models.ForeignKey(Mentor, on_delete=models.CASCADE)
+    mentor_name = models.CharField(max_length=100, null=True, blank=True)
+    about = models.TextField(null=True, blank=True)
+    goals = models.TextField(null=True, blank=True)
+    expectations = models.TextField(null=True, blank=True)
+    questions = models.TextField()
+    date=models.DateTimeField(auto_now_add=True)
+    is_accepted = models.BooleanField(default=False)
+    
+
+    def __str__(self):
+        return self.about
