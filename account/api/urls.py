@@ -10,5 +10,6 @@ urlpatterns = [
     path('startup-register/', views.startup_registration, name='startup_register'),
     path('login/', views.user_login, name='login'),
     path('credit-info/', views.creditinfo, name='login'),
+    path('join-waitlist/', views.join_waitlist, name='join-waitlist'),
 
 ]

@@ -136,3 +136,11 @@ class Mentor(models.Model):
         return self.name
 
 
+class Waitlist(models.Model):
+    email = models.EmailField(verbose_name="email", max_length=100)
+    name = models.CharField(max_length=100)
+    phone = models.CharField(max_length=15, null=True, blank=True)
+    startup_name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.email

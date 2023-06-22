@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from account.models import Startup,Mentor
+from account.models import Startup,Mentor,Waitlist
 from django.http import HttpResponseRedirect, HttpResponse
 from .serializers import StartupSerializer,MentorSerializer,AccountSerializer
 from django.views.decorators.csrf import csrf_exempt
@@ -200,6 +200,24 @@ def mentor(request, id=None):
     
             print(serializer.data)
             return Response(serializer.data)
+
+
+@api_view(['POST'])
+def join_waitlist(request):
+    email = request.data.get('email')
+    name = request.data.get('name')
+    phone = request.data.get('phone')
+    startup_name=request.data.get('companyName')
+    try:
+        user = Waitlist.objects.create(
+                    name=name, email=email,  phone=phone, startup_name=startup_name
+                )
+        user.save()
+    except Exception as e:
+        print("168 ::",e)
+        return Response({'error': 'User already exists'},status=status.HTTP_409_CONFLICT)
+
+    return Response(status=status.HTTP_201_CREATED)
 
 
 # Url:
