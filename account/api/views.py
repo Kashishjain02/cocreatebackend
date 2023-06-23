@@ -204,10 +204,11 @@ def mentor(request, id=None):
 
 @api_view(['POST'])
 def join_waitlist(request):
+    print(request.data)
     email = request.data.get('email')
     name = request.data.get('name')
     phone = request.data.get('phone')
-    startup_name=request.data.get('companyName')
+    startup_name=request.data.get('startupName')
     try:
         user = Waitlist.objects.create(
                     name=name, email=email,  phone=phone, startup_name=startup_name
