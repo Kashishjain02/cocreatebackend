@@ -1,5 +1,5 @@
 from django.contrib import admin
-from account.models import Account, Startup,Mentor
+from account.models import Account, Startup,Mentor,Waitlist
 # from django.contrib.auth.admin import UserAdmin
 
 
@@ -27,3 +27,4 @@ class AccountAdmin(admin.ModelAdmin):
 admin.site.register(Account, AccountAdmin)
 admin.site.register(Startup)
 admin.site.register(Mentor)
+admin.site.register(Waitlist)
